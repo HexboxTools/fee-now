@@ -16,6 +16,9 @@ boundary = uuid.uuid4().hex
 metadata = json.dumps({
     "main_module": "index.js",
     "compatibility_date": "2026-11-06",
+    "bindings": [
+        {"name": "LN", "type": "service", "service": "hexbox-ln"},
+    ],
 })
 def part(name, content, filename=None, ctype="application/json"):
     disp = f'Content-Disposition: form-data; name="{name}"'

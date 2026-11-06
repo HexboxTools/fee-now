@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Fee Now — live Bitcoin transaction fees in sat/vB and USD</title>
-  <meta name="description" content="Live Bitcoin fee calculator. See current sat/vB rates, the USD cost of a typical send, and whether you should broadcast now or wait. Free. Tips via Lightning.">
+  <meta name="description" content="Live Bitcoin fee calculator for humans and AI agents. Free JSON API, L402-paid best-time-to-send forecast (21 sats), OpenAPI + llms.txt. Tips via Lightning.">
   <link rel="canonical" href="https://hexbox-fees.hexboxtools.workers.dev/">
   <meta name="robots" content="index,follow">
   <meta property="og:title" content="Fee Now — should you send that Bitcoin transaction right now?">
-  <meta property="og:description" content="Live sat/vB rates, USD cost for a typical send, and a wait-or-broadcast call. Free Bitcoin fee calculator by Hexbox Tools.">
+  <meta property="og:description" content="Live sat/vB rates, USD costs, free JSON for bots, and a 21-sat L402 fee forecast agents can pay automatically. By Hexbox Tools.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://hexbox-fees.hexboxtools.workers.dev/">
   <meta name="twitter:card" content="summary">
@@ -71,7 +71,7 @@
     }
   </style>
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"WebApplication","name":"Fee Now","url":"https://hexbox-fees.hexboxtools.workers.dev/","applicationCategory":"FinanceApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Live Bitcoin transaction fee calculator with sat/vB rates and USD costs."}
+  {"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"Fee Now","url":"https://hexbox-fees.hexboxtools.workers.dev/","applicationCategory":"FinanceApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Live Bitcoin fee calculator with free JSON API and L402-paid forecast for AI agents.","provider":{"@type":"Organization","name":"Hexbox Tools"}},{"@type":"APIReference","name":"Fee Now L402 forecast","url":"https://hexbox-fees.hexboxtools.workers.dev/api/v1/forecast","description":"21-sat Lightning L402 best-time-to-send Bitcoin fee forecast for autonomous agents."}]}
   </script>
 </head>
 <body>
@@ -81,7 +81,7 @@
   </header>
   <main>
     <h1>Should you send that Bitcoin transaction right now?</h1>
-    <p class="sub">Live next-block, half-hour, hour, and economy fee rates from mempool.space, converted into sats and dollars for common transaction sizes. No account. No tracker cookies.</p>
+    <p class="sub">Live next-block, half-hour, hour, and economy fee rates from mempool.space, converted into sats and dollars for common transaction sizes. No account. No tracker cookies. <strong>AI agents:</strong> free <a href="/api/fees"><code>/api/fees</code></a> · paid L402 forecast <a href="/api/v1/forecast"><code>/api/v1/forecast</code></a> (21 sats) · <a href="/llms.txt">llms.txt</a> · <a href="/agents">agent docs</a>.</p>
 
     <div class="grid" id="tiles">
       <div class="tile"><div class="k">Next block</div><div class="v" id="v-fast">%%FAST%%</div><div class="u">sat/vB</div></div>
@@ -142,11 +142,11 @@
       <p>Bitcoin miners pick transactions by fee rate, measured in satoshis per virtual byte (sat/vB). A typical single-sig send is about 141 vBytes, so a 4 sat/vB rate costs 564 sats. When the mempool is busy, next-block rates jump; when it empties, economy rates can sit at 1 sat/vB.</p>
       <p>Next-block is what you pay to aim for confirmation in the next block (~10 minutes on average). Economy is a low-priority rate that may take hours. If the gap between them is wide and your payment can wait, using economy is how you stop overpaying.</p>
       <p>Fees often ease on weekends and during quieter UTC hours, and they spike when inscriptions, batch settlements, or sudden demand clog the mempool. This page rereads <a href="https://mempool.space/api/v1/fees/recommended">mempool.space recommended fees</a> and <a href="https://mempool.space/api/v1/prices">USD price</a> about every 30 seconds. Treat sizes as estimates — your wallet will show the exact vBytes for the transaction it builds.</p>
-      <p>JSON API (free, CORS open): <a href="/api/fees"><code>/api/fees</code></a>.</p>
+      <p>JSON API (free, CORS open): <a href="/api/fees"><code>/api/fees</code></a>. Agents that pay Lightning: <a href="/api/v1/forecast"><code>/api/v1/forecast</code></a> (L402, 21 sats) — discovery at <a href="/llms.txt"><code>/llms.txt</code></a>, <a href="/openapi.json"><code>/openapi.json</code></a>, <a href="/api/agent.json"><code>/api/agent.json</code></a>.</p>
     </div>
   </main>
   <footer>
-    Built by <a href="https://github.com/HexboxTools/fee-now">Hexbox Tools</a>. Payments settle to the Hexbox Lightning address above. Not financial advice — just the current fee market.
+    Built by <a href="https://github.com/HexboxTools/fee-now">Hexbox Tools</a>. Payments settle to the Hexbox Lightning address above. Agents: <a href="/agents">/agents</a>. Not financial advice — just the current fee market.
   </footer>
   <script id="boot" type="application/json">%%DATA%%</script>
   <script>

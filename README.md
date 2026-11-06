@@ -1,40 +1,49 @@
 # Fee Now
 
-Live Bitcoin fee calculator. Should you broadcast that transaction now, or wait?
+Live Bitcoin fee calculator + Lightning tips + L402-paid forecast for AI agents.
 
 **Live:** https://hexbox-fees.hexboxtools.workers.dev/
 
+## Humans
+
 Reads [mempool.space recommended fees](https://mempool.space/api/v1/fees/recommended) and USD price, then shows the cost of common transaction sizes in sats and dollars, plus how much you save by using the economy rate.
+
+## AI agents / bots
+
+Designed so autonomous agents discover and pay automatically:
+
+| Path | What |
+|------|------|
+| `/llms.txt` | LLM / agent crawl brief |
+| `/openapi.json` | OpenAPI 3 |
+| `/.well-known/ai-plugin.json` | AI plugin manifest |
+| `/api/agent.json` | Compact machine discovery |
+| `/agents` | Human+agent docs |
+| `/api/fees` | **Free** live fees JSON (CORS open) |
+| `/api/v1/forecast` | **Paid** L402 best-time-to-send forecast (21 sats) |
+| `/api/v1/forecast/sample` | Free schema sample |
+
+Pay flow: `GET /api/v1/forecast` → HTTP 402 + `WWW-Authenticate: L402 macaroon=…, invoice=lnbc…` → pay bolt11 → retry with `Authorization: L402 <macaroon>:<preimage>`.
 
 ## Earnings (Hexbox)
 
-- Lightning tips (any amount): `hexbox@hexbox-ln.hexboxtools.workers.dev`
-- Zap-gated Nostr fee alerts: zap the announcement note 2,100 sats for 7 days. Reply `below 5` (or any number) to set a threshold. Default: next-block ≤ 3 sat/vB or ≥ 50.
+- Lightning tips: `hexbox@hexbox-ln.hexboxtools.workers.dev`
+- L402 forecast: 21 sats per call
+- Zap-gated Nostr fee alerts: zap the announcement note 2,100 sats for 7 days
 
-No KYC. No ads until we have an aged custom domain (A-ADS rejects `workers.dev`).
+No KYC. Hexbox identity only.
 
-## API
+## SEO pages
 
-`GET https://hexbox-fees.hexboxtools.workers.dev/api/fees`
+- `/should-i-send-bitcoin-now`
+- `/bitcoin-fee-history`
+- `/fees/next-block` · `/fees/half-hour` · `/fees/hour` · `/fees/economy`
+- `/fees/target/{satvb}`
 
-CORS is open. Free for reasonable use.
-
-## Run locally
-
-The site is a Cloudflare Worker (`src/worker.js` + `src/page.html`). Build with `python3 build.py` (writes `src/index.js`).
-
-The alert loop lives on the box:
+## Deploy
 
 ```
-node alerts.mjs          # one tick
-./run-alerts.sh          # every 3 minutes
+./deploy.sh
 ```
 
-It watches zap receipts on the announcement note and posts tagged alerts to paying pubkeys. Public fee-regime notes are rate-limited (max 3/day, 3h cooldown, only on real regime changes) so this is not a spam bot.
-
-## Source data
-
-- https://mempool.space/api/v1/fees/recommended
-- https://mempool.space/api/v1/prices
-
-Typical-send size is 141 vBytes (P2WPKH 1-in 2-out). Your wallet's exact vBytes will differ.
+Alert loop on the box: `./run-alerts.sh`

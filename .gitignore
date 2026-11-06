@@ -5,3 +5,6 @@ alerts.out
 *.tmp
 alerts.pid
 alerts-daemon.out
+
+secrets/
+src/index.js
