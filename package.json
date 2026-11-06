@@ -1,0 +1,15 @@
+{
+  "name": "hexbox-fee-now",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Live Bitcoin fee calculator + Lightning tips + zap-gated Nostr alerts",
+  "scripts": {
+    "build": "python3 build.py",
+    "alerts": "node alerts.mjs"
+  },
+  "dependencies": {
+    "nostr-tools": "^2.25.2",
+    "ws": "^8.22.0"
+  }
+}

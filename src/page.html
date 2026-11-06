@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fee Now — live Bitcoin transaction fees in sat/vB and USD</title>
+  <meta name="description" content="Live Bitcoin fee calculator. See current sat/vB rates, the USD cost of a typical send, and whether you should broadcast now or wait. Free. Tips via Lightning.">
+  <link rel="canonical" href="https://hexbox-fees.hexboxtools.workers.dev/">
+  <meta name="robots" content="index,follow">
+  <meta property="og:title" content="Fee Now — should you send that Bitcoin transaction right now?">
+  <meta property="og:description" content="Live sat/vB rates, USD cost for a typical send, and a wait-or-broadcast call. Free Bitcoin fee calculator by Hexbox Tools.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://hexbox-fees.hexboxtools.workers.dev/">
+  <meta name="twitter:card" content="summary">
+  <meta name="theme-color" content="#0c0d10">
+  <style>
+    :root {
+      --bg: #0c0d10; --card: #16181d; --ink: #e8eaed; --muted: #9aa0a6;
+      --line: #2a2d34; --orange: #f7931a; --green: #3dd68c; --red: #ff6b6b;
+      --blue: #7ab8ff; --yellow: #ffd36b;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; background: var(--bg); color: var(--ink);
+      font: 16px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+    a { color: var(--orange); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    header, main, footer { max-width: 840px; margin: 0 auto; padding: 0 20px; }
+    header { padding-top: 36px; display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+    .brand { font-weight: 750; letter-spacing: -0.03em; font-size: 22px; }
+    .brand span { color: var(--orange); }
+    .meta { color: var(--muted); font-size: 13px; }
+    h1 { font-size: clamp(28px, 5vw, 42px); letter-spacing: -0.04em; line-height: 1.15; margin: 18px 0 10px; }
+    .sub { color: var(--muted); margin: 0 0 28px; max-width: 42em; }
+    .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .tile { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px 14px 14px; }
+    .tile .k { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .06em; }
+    .tile .v { font-variant-numeric: tabular-nums; font-size: 32px; font-weight: 720; letter-spacing: -0.04em; margin-top: 6px; }
+    .tile .u { color: var(--muted); font-size: 13px; }
+    .advice { margin: 16px 0 28px; padding: 16px 18px; border-radius: 14px; border: 1px solid var(--line); background: var(--card); }
+    .advice.great { border-color: #1e5c40; background: #10261c; }
+    .advice.good { border-color: #1e5c40; }
+    .advice.high { border-color: #6a4a12; background: #241c10; }
+    .advice.hot { border-color: #6a2424; background: #2a1212; }
+    .badge { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; margin-bottom: 8px; background: #2a2d34; color: var(--muted); }
+    .advice.great .badge, .advice.good .badge { background: #1e5c40; color: var(--green); }
+    .advice.high .badge { background: #6a4a12; color: var(--yellow); }
+    .advice.hot .badge { background: #6a2424; color: var(--red); }
+    table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 14px; overflow: hidden; border: 1px solid var(--line); }
+    th, td { padding: 12px 14px; text-align: right; font-variant-numeric: tabular-nums; }
+    th:first-child, td:first-child { text-align: left; }
+    th { font-size: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; background: #12141a; }
+    tr + tr td { border-top: 1px solid var(--line); }
+    td .usd { display: block; color: var(--muted); font-size: 12px; }
+    .calc, .pay, .how { margin: 28px 0; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 20px; }
+    h2 { font-size: 18px; margin: 0 0 12px; letter-spacing: -0.02em; }
+    label { display: block; color: var(--muted); font-size: 13px; margin-bottom: 6px; }
+    input { width: 100%; background: #0c0d10; color: var(--ink); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; font: inherit; font-variant-numeric: tabular-nums; }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+    .result { margin-top: 8px; font-size: 15px; }
+    .paybox { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; }
+    .paybox img { width: 148px; height: 148px; border-radius: 10px; background: #fff; }
+    code, .ln { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13.5px; word-break: break-all; }
+    button.copy { background: var(--orange); color: #1a1003; border: 0; border-radius: 8px; padding: 8px 12px; font-weight: 700; cursor: pointer; }
+    button.copy:hover { filter: brightness(1.08); }
+    .how p { color: #c9cdd3; margin: 0 0 10px; }
+    footer { color: var(--muted); font-size: 13px; padding: 12px 20px 48px; }
+    @media (max-width: 720px) {
+      .grid { grid-template-columns: 1fr 1fr; }
+      .row2 { grid-template-columns: 1fr; }
+      th, td { padding: 10px 8px; font-size: 13px; }
+    }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"Fee Now","url":"https://hexbox-fees.hexboxtools.workers.dev/","applicationCategory":"FinanceApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Live Bitcoin transaction fee calculator with sat/vB rates and USD costs."}
+  </script>
+</head>
+<body>
+  <header>
+    <div class="brand">Fee <span>Now</span></div>
+    <div class="meta" id="stamp">Updated %%UPDATED%% · BTC $%%USD%%</div>
+  </header>
+  <main>
+    <h1>Should you send that Bitcoin transaction right now?</h1>
+    <p class="sub">Live next-block, half-hour, hour, and economy fee rates from mempool.space, converted into sats and dollars for common transaction sizes. No account. No tracker cookies.</p>
+
+    <div class="grid" id="tiles">
+      <div class="tile"><div class="k">Next block</div><div class="v" id="v-fast">%%FAST%%</div><div class="u">sat/vB</div></div>
+      <div class="tile"><div class="k">~30 minutes</div><div class="v" id="v-half">%%HALF%%</div><div class="u">sat/vB</div></div>
+      <div class="tile"><div class="k">~1 hour</div><div class="v" id="v-hour">%%HOUR%%</div><div class="u">sat/vB</div></div>
+      <div class="tile"><div class="k">Economy</div><div class="v" id="v-eco">%%ECO%%</div><div class="u">sat/vB</div></div>
+    </div>
+
+    <div class="advice %%LEVEL%%" id="advice">
+      <div class="badge" id="badge">%%LEVEL%%</div>
+      <div id="advice-text">%%ADVICE%%</div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Transaction</th>
+          <th>vBytes</th>
+          <th>Next block</th>
+          <th>Economy</th>
+          <th>You save by waiting</th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+
+    <div class="calc">
+      <h2>Custom size</h2>
+      <div class="row2">
+        <div>
+          <label for="vb">Transaction weight (vBytes)</label>
+          <input id="vb" type="number" min="1" step="1" value="141">
+        </div>
+        <div>
+          <label for="rate">Fee rate (sat/vB) — leave blank to use next-block</label>
+          <input id="rate" type="number" min="1" step="1" placeholder="next-block rate">
+        </div>
+      </div>
+      <div class="result" id="custom"></div>
+    </div>
+
+    <div class="pay" id="support">
+      <h2>Keep it running</h2>
+      <p style="color:var(--muted);margin:0 0 14px">Fee Now is free. If a cheap-fee window saved you money, send a Lightning tip — any amount — to Hexbox Tools. No KYC, no signup.</p>
+      <div class="paybox">
+        <img alt="Lightning address QR code" width="148" height="148"
+          src="https://api.qrserver.com/v1/create-qr-code/?size=148x148&amp;data=lightning%3Ahexbox%40hexbox-ln.hexboxtools.workers.dev">
+        <div>
+          <div class="ln" id="ln">hexbox@hexbox-ln.hexboxtools.workers.dev</div>
+          <p style="margin:10px 0"><button class="copy" type="button" id="copy-ln">Copy Lightning address</button></p>
+          <p style="color:var(--muted);font-size:13px;margin:0">Want a Nostr ping when fees drop below your target? Zap the announcement note 2,100 sats for 7 days of alerts, then reply <code>below 5</code> (or any number). Default alert: fastest fee ≤ 3 sat/vB or ≥ 50. Announcement: <a id="announce-link" href="https://njump.me/note18w2lcptvf32552u8jw6049pq8t38xtxzx47dpqx9x5d24hjlv9fqaqekhq">announcement note</a>.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="how">
+      <h2>How Bitcoin fees work</h2>
+      <p>Bitcoin miners pick transactions by fee rate, measured in satoshis per virtual byte (sat/vB). A typical single-sig send is about 141 vBytes, so a 4 sat/vB rate costs 564 sats. When the mempool is busy, next-block rates jump; when it empties, economy rates can sit at 1 sat/vB.</p>
+      <p>Next-block is what you pay to aim for confirmation in the next block (~10 minutes on average). Economy is a low-priority rate that may take hours. If the gap between them is wide and your payment can wait, using economy is how you stop overpaying.</p>
+      <p>Fees often ease on weekends and during quieter UTC hours, and they spike when inscriptions, batch settlements, or sudden demand clog the mempool. This page rereads <a href="https://mempool.space/api/v1/fees/recommended">mempool.space recommended fees</a> and <a href="https://mempool.space/api/v1/prices">USD price</a> about every 30 seconds. Treat sizes as estimates — your wallet will show the exact vBytes for the transaction it builds.</p>
+      <p>JSON API (free, CORS open): <a href="/api/fees"><code>/api/fees</code></a>.</p>
+    </div>
+  </main>
+  <footer>
+    Built by <a href="https://github.com/HexboxTools/fee-now">Hexbox Tools</a>. Payments settle to the Hexbox Lightning address above. Not financial advice — just the current fee market.
+  </footer>
+  <script id="boot" type="application/json">%%DATA%%</script>
+  <script>
+    const boot = JSON.parse(document.getElementById("boot").textContent || "{}");
+    const $ = (id) => document.getElementById(id);
+    function fmtSats(n) { return Math.round(n).toLocaleString() + " sats"; }
+    function fmtUsd(n) {
+      if (!Number.isFinite(n)) return "";
+      if (n < 0.01) return "$" + n.toFixed(4);
+      if (n < 1) return "$" + n.toFixed(3);
+      return "$" + n.toFixed(2);
+    }
+    function money(cell) {
+      if (!cell) return "—";
+      return fmtSats(cell.sats) + '<span class="usd">' + fmtUsd(cell.usd) + "</span>";
+    }
+    function render(data) {
+      if (!data || !data.fees) return;
+      $("v-fast").textContent = data.fees.fastestFee;
+      $("v-half").textContent = data.fees.halfHourFee;
+      $("v-hour").textContent = data.fees.hourFee;
+      $("v-eco").textContent = data.fees.economyFee;
+      const adv = $("advice");
+      adv.className = "advice " + (data.advice && data.advice.level || "ok");
+      $("badge").textContent = (data.advice && data.advice.level) || "";
+      $("advice-text").textContent = (data.advice && data.advice.text) || "";
+      const usd = data.btcUsd ? Math.round(data.btcUsd).toLocaleString() : "—";
+      const when = data.updated ? new Date(data.updated).toLocaleString("en-CA", { timeZone: "America/Toronto" }) + " ET" : "";
+      $("stamp").textContent = (when ? ("Updated " + when + " · ") : "") + "BTC $" + usd;
+      const body = $("rows");
+      body.innerHTML = (data.rows || []).map(function (r) {
+        return "<tr><td>" + r.label + "</td><td>" + r.vb + "</td><td>" + money(r.fastest) + "</td><td>" + money(r.economy) + "</td><td>" + money(r.save) + "</td></tr>";
+      }).join("");
+      window.__fees = data;
+      updateCustom();
+    }
+    function updateCustom() {
+      const data = window.__fees;
+      if (!data || !data.fees) return;
+      const vb = Math.max(1, Number($("vb").value) || 141);
+      const rate = Number($("rate").value);
+      const used = Number.isFinite(rate) && rate > 0 ? rate : Number(data.fees.fastestFee) || 0;
+      const sats = Math.round(vb * used);
+      const usd = (sats / 1e8) * (Number(data.btcUsd) || 0);
+      const eco = Math.round(vb * (Number(data.fees.economyFee) || 0));
+      const save = Math.max(0, sats - eco);
+      $("custom").innerHTML = vb + " vB at " + used + " sat/vB = <strong>" + fmtSats(sats) + "</strong> (" + fmtUsd(usd) + "). Economy would be " + fmtSats(eco) + "; waiting saves " + fmtSats(save) + ".";
+    }
+    $("vb").addEventListener("input", updateCustom);
+    $("rate").addEventListener("input", updateCustom);
+    $("copy-ln").addEventListener("click", async function () {
+      const addr = $("ln").textContent.trim();
+      try { await navigator.clipboard.writeText(addr); $("copy-ln").textContent = "Copied"; setTimeout(() => $("copy-ln").textContent = "Copy Lightning address", 1500); }
+      catch (e) { $("copy-ln").textContent = "Copy failed"; }
+    });
+    render(boot);
+    async function refresh() {
+      try {
+        const r = await fetch("/api/fees", { cache: "no-store" });
+        if (!r.ok) return;
+        render(await r.json());
+      } catch (e) {}
+    }
+    setInterval(refresh, 30000);
+  </script>
+</body>
+</html>
